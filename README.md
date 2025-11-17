@@ -1,7 +1,7 @@
 coupang
 -------
 **coupang**은 쿠팡 오픈 API의 파이썬 래퍼(Python wrapper) 입니다.   
-현재 9개의 주제에 대해 구현되어 있으며, 그 내용은 아래와 같습니다.      
+현재 10개의 주제에 대해 구현되어 있으며, 그 내용은 아래와 같습니다.      
 1. 카테고리 API(category)
     - 카테고리 메타정보 조회
         * get_category_meta(path)
@@ -131,6 +131,25 @@ coupang
 9. 검색(search)
     - 상품검색
         * search(keywords)
+10. 로켓그로스 API(rocketgrowth)
+    - 로켓그로스 주문 목록 조회
+        * get_rocketgrowth_orders(query)
+    - 로켓그로스 주문 상세 조회
+        * get_rocketgrowth_order_detail(path)
+    - 로켓창고 재고 조회
+        * get_rocketwarehouse_inventory(query)
+    - 로켓그로스 상품 목록 페이징 조회
+        * get_rocketgrowth_products_by_query(query)
+    - 로켓그로스 상품 생성
+        * create_rocketgrowth_product(body)
+    - 로켓그로스 상품 수정
+        * update_rocketgrowth_product(body)
+    - 로켓그로스 상품 조회
+        * get_rocketgrowth_product_by_id(path)
+    - 로켓그로스 카테고리 메타 정보 조회
+        * get_rocketgrowth_category_meta(path)
+    - 로켓그로스 카테고리 목록 조회
+        * get_rocketgrowth_categories()
      
 함수의 매개변수는 **쿠팡 오픈 API** 에서 확인할 수 있습니다.    
 path는 Path Segment Parameter를 의미하며 dict 자료형입니다.    
