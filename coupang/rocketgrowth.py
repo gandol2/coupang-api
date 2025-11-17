@@ -1,6 +1,6 @@
 import json
 import urllib.parse
-from common import coupang
+from coupang.common import coupang
 
 
 ##############################################################################
