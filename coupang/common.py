@@ -14,14 +14,18 @@ config = configparser.ConfigParser()
 config.read('coupang.ini')
 SECRETKEY = config['DEFAULT'].get('SECRETKEY')
 ACCESSKEY = config['DEFAULT'].get('ACCESSKEY')
+VENDOR_ID = config['DEFAULT'].get('VENDOR_ID')
 
 if SECRETKEY is None:
     raise Exception('SECRETKEY를 설정해주십시오.')
 if ACCESSKEY is None:
     raise Exception('ACCESSKEY를 설정해주십시오.')
+if VENDOR_ID is None:
+    raise Exception('VENDOR_ID를 설정해주십시오.')
 
 SECRETKEY = re.sub('^\'|^\"|\'$|\"$', '', SECRETKEY)
 ACCESSKEY = re.sub('^\'|^\"|\'$|\"$', '', ACCESSKEY)
+VENDOR_ID = re.sub('^\'|^\"|\'$|\"$', '', VENDOR_ID)
 
 
 ##############################################################################
@@ -35,6 +39,7 @@ def coupang(f):
     def decorated(*args, **kwargs):
         secretkey = SECRETKEY
         accesskey = ACCESSKEY
+        vendorId = VENDOR_ID
         retry = True
 
         data = f(*args, **kwargs)
