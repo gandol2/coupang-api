@@ -1,6 +1,92 @@
-coupang
--------
-**coupang**은 쿠팡 오픈 API의 파이썬 래퍼(Python wrapper) 입니다.   
+# Coupang Open API Python Wrapper
+
+**coupang**은 쿠팡 오픈 API의 파이썬 래퍼(Python wrapper)입니다.   
+현재 10개의 주제에 대해 구현되어 있으며, Python 표준 라이브러리만으로 작동합니다.
+
+## 🚀 빠른 시작
+
+### 설치
+
+```bash
+# pip로 설치 (PyPI 등록 전)
+pip install git+https://github.com/gandol2/coupang-api.git
+
+# uv로 설치
+uv add git+https://github.com/gandol2/coupang-api.git
+
+# 로컬 경로로 설치 (개발 모드)
+uv add --editable ./coupang-api
+```
+
+### 설정
+
+프로젝트 루트에 `coupang.ini` 파일을 생성하세요:
+
+```ini
+[DEFAULT]
+SECRETKEY = 발급받은_SecretKey
+ACCESSKEY = 발급받은_AccessKey
+VENDOR_ID = 업체코드
+```
+
+> API Key는 [쿠팡 오픈 API](https://developers.coupang.com/hc/ko/articles/360033980613)에서 발급받을 수 있습니다.
+
+### 기본 사용법
+
+```python
+from coupang.category import get_product_auto_category, get_category_meta
+from coupang.product import get_products_by_query, get_product_by_product_id
+from coupang.ordersheet import get_ordersheet
+
+# 1. 카테고리 자동 추천 (머신러닝)
+result = get_product_auto_category({'productName': '무선 이어폰'})
+print(result)
+# {'code': 200, 'message': 'OK', 
+#  'data': {'predictedCategoryId': '12345', 'predictedCategoryName': '이어폰'}}
+
+# 2. 카테고리 메타 정보 조회
+category_meta = get_category_meta({'displayCategoryCode': '12345'})
+print(category_meta)
+
+# 3. 상품 목록 조회
+products = get_products_by_query({
+    'sellerProductName': '무선 이어폰',
+    'page': 1,
+    'size': 20
+})
+
+# 4. 특정 상품 상세 조회
+product_detail = get_product_by_product_id({'productId': '123456'})
+
+# 5. 발주서 조회 (일단위)
+orders = get_ordersheet(
+    path={'createdAt': 'days'},
+    query={'createdAtFrom': '2025-01-01', 'createdAtTo': '2025-01-31'}
+)
+```
+
+### 고급 사용 - 커스텀 함수 추가
+
+이 패키지는 데코레이터 기반으로 쉽게 확장할 수 있습니다:
+
+```python
+import json
+from coupang.common import coupang
+
+@coupang
+def custom_api_call(path):
+    """커스텀 API 호출 예시"""
+    return {
+        'method': "GET",
+        'path': f"/v2/providers/seller_api/apis/api/v1/custom/{path.get('id')}"
+    }
+
+# 사용
+result = custom_api_call({'id': '12345'})
+```
+
+## 📋 API 함수 목록
+
 현재 10개의 주제에 대해 구현되어 있으며, 그 내용은 아래와 같습니다.      
 1. 카테고리 API(category)
     - 카테고리 메타정보 조회
@@ -151,47 +237,28 @@ coupang
     - 로켓그로스 카테고리 목록 조회
         * get_rocketgrowth_categories()
      
-함수의 매개변수는 **쿠팡 오픈 API** 에서 확인할 수 있습니다.    
-path는 Path Segment Parameter를 의미하며 dict 자료형입니다.    
-body는 Body Parameter를 의미하며 dict 자료형입니다.    
-query는 Query String Parameter 를 의미하며 dict 자료형입니다.    
-마지막의 search 함수의 매개변수인 keywords는 str 타입입니다.    
-     
-쿠팡 오픈 API에 관한 자세한 내용은 아래 주소에서 확인하실 수 있습니다.   
-[쿠팡 오픈 API 공식문서](https://developers.coupang.com/hc/ko)    
+## 📝 매개변수 안내
 
-설치
-----
-**pip install coupang**   
+- **path**: Path Segment Parameter (dict 자료형)
+- **body**: Body Parameter (dict 자료형)  
+- **query**: Query String Parameter (dict 자료형)
+- **keywords**: 검색 키워드 (str 자료형, search 함수 전용)
 
-사용법
------
-1. 위의 명령어를 이용하여 coupang 패키지 설치하기
-2. OPEN API Key 발급받기
-    - 쿠팡의 [OPEN API Key 발급받기](https://developers.coupang.com/hc/ko/articles/360033980613)를 참조하여 SecretKey, AccessKey를 준비합니다. 
-3. **coupang.ini** 파일을 만들고 아래의 정보를 작성하십시오.    
-```python
-[DEFAULT]
-SECRETKEY = 발급받은SecretKey
-ACCESSKEY = 발급받은AccessKey
-VENDOR_ID = 업체코드
-```
-4. 파이썬 쉘에서 테스트 해보기
-```python
-MacBook-Pro:~/kyungdongseo$ pip install coupang
+## 📚 참고 자료
 
-MacBook-Pro:~/kyungdongseo$ cat >> coupang.ini << EOF 
-> [DEFAULT]
-> SECRETKEY = 비밀키
-> ACCESSKEY = 액세스키
-> VENDOR_ID = 업체코드
-> EOF
+- [쿠팡 오픈 API 공식문서](https://developers.coupang.com/hc/ko)
+- [API Key 발급 가이드](https://developers.coupang.com/hc/ko/articles/360033980613)
 
-MacBook-Pro:~/kyungdongseo$ ls
-coupang.ini    
+## 🔧 개발 환경
 
-MacBook-Pro:~/kyungdongseo$ python
->>> from coupang.category import get_product_auto_category
->>> get_product_auto_category({'productName': 'pop꽂이'})
-{'code': 200, 'message': 'OK', 'data': {'autoCategorizationPredictionResultType': 'SUCCESS', 'predictedCategoryId': '80060', 'predictedCategoryName': '아크릴/POP꽂이', 'comment': None}}
-```
+- Python >= 3.8
+- 외부 의존성 없음 (표준 라이브러리만 사용)
+- 빌드 시스템: hatchling
+
+## 📄 라이선스
+
+이 프로젝트는 원본 저장소에서 포크되었으며, uv 호환성을 위해 재구조화되었습니다.
+
+## 🤝 기여
+
+이슈와 Pull Request는 언제나 환영합니다!
