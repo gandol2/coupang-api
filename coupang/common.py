@@ -249,12 +249,25 @@ def request(method, url, authorization, body=None):
             resp = urllib.request.urlopen(req, context=ctx)
 
     except urllib.request.HTTPError as e:
-        print(e.code)
-        print(e.reason)
+        print("=" * 80)
+        print(f"[HTTP Error] {e.code} - {e.reason}")
+        print(f"URL: {e.url}")
+        print(f"Headers: {dict(e.headers)}")
+        try:
+            error_body = e.read().decode('utf-8')
+            print(f"Response Body:\n{error_body}")
+        except Exception:
+            print("Response Body: (읽기 실패)")
+        print("=" * 80)
         raise e
     except urllib.request.URLError as e:
-        print(e.errno)
-        print(e.reason)
+        print("=" * 80)
+        print(f"[URL Error] {type(e).__name__}")
+        print(f"Reason: {e.reason}")
+        if hasattr(e, 'errno'):
+            print(f"Error Code: {e.errno}")
+        print(f"URL: {url if 'url' in locals() else 'N/A'}")
+        print("=" * 80)
         raise e
     else:
         # 200
